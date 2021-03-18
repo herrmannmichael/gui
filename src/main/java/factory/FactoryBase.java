@@ -8,11 +8,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class FactoryBase {
-    public static Object build(String componentPath, String component, String archiveName) {
+    public static Object build(String componentPath, String component) {
         Object port = null;
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\Java\\jdk-15.0.1\\bin\\jarsigner", "-verify", archiveName);
+            ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\Java\\jdk-15.0.1\\bin\\jarsigner", "-verify", componentPath);
             Process process = processBuilder.start();
             process.waitFor();
 

@@ -1,4 +1,5 @@
 import configuration.Configuration;
+import factory.RSAFactory;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,6 +15,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +51,7 @@ public class GUI extends Application {
             public void handle(ActionEvent event) {
                 try {
                     outputArea.setText(executeCommand(commandLineArea.getText()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -79,7 +82,7 @@ public class GUI extends Application {
                     case F5 -> {
                         try {
                             outputArea.setText(executeCommand(commandLineArea.getText()));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -92,7 +95,7 @@ public class GUI extends Application {
         primaryStage.show();
     }
 
-    private String executeCommand(String input) throws IOException {
+    private String executeCommand(String input) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         List<String> parameterList = extractParametersFromBrackets(input);
 
         // Log List Items
@@ -109,6 +112,9 @@ public class GUI extends Application {
             parameterList.add("encrypt");
             if(parameterList.get(1).equals("rsa")){
                 //cipher = rsa.encrypt(parameterList.get(0),file);
+                Object rsa = RSAFactory.build();
+                Method encryptMethod = rsa.getClass().getMethod("encrypt", String.class, File.class);
+                cipher = (String) encryptMethod.invoke(rsa, parameterList.get(0) ,file);
                 parameterList.add(cipher);
             }
             else if (parameterList.get(1).equals("shift")){

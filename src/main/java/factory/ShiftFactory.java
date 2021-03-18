@@ -4,6 +4,6 @@ import configuration.Configuration;
 
 public class ShiftFactory extends FactoryBase{
     public static Object build() {
-        return build(Configuration.instance.pathToShiftJavaArchive, "CaesarCipher", Configuration.instance.shiftArchiveName);
+        return build(Configuration.instance.pathToShiftJavaArchive, "CaesarCipher");
     }
 }

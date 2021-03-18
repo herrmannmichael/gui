@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
 
 public class Cipher {
     // static instance
-    private static Cipher instance = new Cipher();
+    private static final Cipher instance = new Cipher();
     // port
     public Port port;
 
