@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cipher {
     // static instance
@@ -47,9 +49,15 @@ public class Cipher {
         StringBuilder stringBuilder = new StringBuilder();
 
         Key key = readKey(privateKeyfile);
-        encryptedMessage = encryptedMessage.replaceAll(",", "");
+        String[] bytes = encryptedMessage.split(",");
+        List<Byte> decryptedBytes = new ArrayList<>();
 
-        stringBuilder.append(crypt(new BigInteger(String.valueOf(encryptedMessage)), key));
+        for(String bytePart: bytes)
+            decryptedBytes.add(crypt(new BigInteger(String.valueOf(bytePart)), key).byteValue());
+
+        for(Byte decryptedByte: decryptedBytes)
+            stringBuilder.append(Character.toString(decryptedByte));
+
 
         return stringBuilder.toString();
     }
