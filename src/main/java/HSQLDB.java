@@ -289,27 +289,27 @@ public enum HSQLDB {
     }
 
     public String showChannel () throws SQLException {
-        String query = "SELECT name,participant_01, participant_01 FROM channel";
+        String query = "SELECT name,participant_01, participant_02 FROM channel";
         ResultSet resultSet = select(query);
 
         StringBuilder sqlStringBuilder01 = new StringBuilder();
 
         while (resultSet.next()){
 
-            sqlStringBuilder01.append(resultSet.getString("name | "));
+            sqlStringBuilder01.append(resultSet.getString("name")).append(" | ");
             int par1 = resultSet.getInt("participant_01");
             query = "SELECT name FROM participants WHERE id="+par1;
             ResultSet resultSet1 = select(query);
             resultSet1.next();
             String parName1 = resultSet1.getString("name");
-            sqlStringBuilder01.append(resultSet.getString(parName1)).append("and");
+            sqlStringBuilder01.append(parName1).append(" and ");
 
             int par2 = resultSet.getInt("participant_02");
             query = "SELECT name FROM participants WHERE id="+par2;
             resultSet1 = select(query);
             resultSet1.next();
             String parName2 = resultSet1.getString("name");
-            sqlStringBuilder01.append(resultSet.getString(parName2)).append("\n\r");
+            sqlStringBuilder01.append(parName2).append("\n\r");
         }
         return sqlStringBuilder01.toString();
     }
@@ -320,8 +320,8 @@ public enum HSQLDB {
         result.next();
         int count = result.getInt("count");
 
-        if(count==0){
-            query = "DELETE FROM table_name WHERE name = '" + channelName+"'";
+        if(count!=0){
+            query = "DELETE FROM channel WHERE name = '" + channelName+"'";
             update(query);
             return "channel ["+channelName+"] deleted";
         }

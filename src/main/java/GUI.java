@@ -40,7 +40,6 @@ public class GUI extends Application {
         System.out.println(HSQLDB.instance.registerParticipant("branch_syd","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_wuh","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("msa","intruder"));
-        HSQLDB.instance.shutdown();
 
         HBox hBox = new HBox();
         hBox.setPadding(new Insets(15, 12, 15, 12));
@@ -110,7 +109,7 @@ public class GUI extends Application {
         primaryStage.show();
     }
 
-    private String executeCommand(String input) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private String executeCommand(String input) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
         List<String> parameterList = extractParametersFromBrackets(input);
 
         // Log List Items
@@ -180,16 +179,20 @@ public class GUI extends Application {
             }
         }
         else if(input.contains("register participant")){
-
+            String message = HSQLDB.instance.registerParticipant(parameterList.get(0),parameterList.get(1));
+            System.out.println(message);
+            return message;
         }
         else if(input.contains("create channel")){
 
         }
         else if(input.contains("show channel")){
-
+            return HSQLDB.instance.showChannel();
         }
         else if(input.contains("drop channel")){
-
+            String message = HSQLDB.instance.dropChannel(parameterList.get(0));
+            System.out.println(message);
+            return message;
         }
         else if(input.contains("intrude channel")){
 
