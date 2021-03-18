@@ -1,3 +1,4 @@
+import configuration.Configuration;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,11 +12,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 
-
-import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -48,7 +47,7 @@ public class GUI extends Application {
         executeButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 try {
-                    executeCommand(commandLineArea.getText());
+                    outputArea.setText(executeCommand(commandLineArea.getText()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -71,6 +70,7 @@ public class GUI extends Application {
         vbox.getChildren().addAll(hBox, commandLineArea, outputArea);
 
         Scene scene = new Scene(vbox, 950, 500);
+
         scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
             @Override
             public void handle(KeyEvent event) {
@@ -78,7 +78,7 @@ public class GUI extends Application {
                     case F3 -> log.toggleEnable();
                     case F5 -> {
                         try {
-                            executeCommand(commandLineArea.getText());
+                            outputArea.setText(executeCommand(commandLineArea.getText()));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -87,29 +87,56 @@ public class GUI extends Application {
                 }
             }
         });
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    private void executeCommand(String input) throws IOException {
+    private String executeCommand(String input) throws IOException {
         List<String> parameterList = extractParametersFromBrackets(input);
 
+        // Log List Items
+        // 0 message
+        // 1 alogrithm
+        // 2 filename
+        // 3 encrypt/decrypt
+        // 4 cipher
         if (input.contains("encrypt message")){
+            String cipher = "";
             if(parameterList.get(1).equals("rsa")){
-                System.out.println("test");
+                File file = new File(Configuration.instance.publicKeyFile);
+                //cipher = rsa.encrypt(parameterList.get(0),file);
                 parameterList.add("encrypt");
+                parameterList.add(cipher);
                 log.newFile(parameterList);
+                return cipher;
             }
             else if (parameterList.get(1).equals("shift")){
-
+                File file = new File(Configuration.instance.publicKeyFile);
+                //cipher = shift.encrypt(parameterList.get(0),file);
+                parameterList.add("encrypt");
+                parameterList.add(cipher);
+                log.newFile(parameterList);
+                return cipher;
             }
         }
         else if(input.contains("decrypt message")){
+            String cipher = "";
             if(parameterList.get(1).equals("rsa")){
-
+                File file = new File(Configuration.instance.publicKeyFile);
+                //cipher = rsa.encrypt(parameterList.get(0),file);
+                parameterList.add("decrypt");
+                parameterList.add(cipher);
+                log.newFile(parameterList);
+                return cipher;
             }
             else if (parameterList.get(1).equals("shift")){
-
+                File file = new File(Configuration.instance.publicKeyFile);
+                //cipher = rsa.encrypt(parameterList.get(0),file);
+                parameterList.add("decrypt");
+                parameterList.add(cipher);
+                log.newFile(parameterList);
+                return cipher;
             }
         }
         else if(input.contains("crack encrypted message")){
@@ -138,10 +165,10 @@ public class GUI extends Application {
         else if(input.contains("send message")){
 
         }
-
+        return "";
     }
 
-    private static List<String> extractParametersFromBrackets(String input){
+    private  List<String> extractParametersFromBrackets(String input){
         if(input.contains("[") && input.contains("]")){
             int indexStart = input.indexOf('[');
             int indexEnd = input.indexOf(']');

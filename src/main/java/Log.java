@@ -15,13 +15,17 @@ public class Log {
         // 1 alogrithm
         // 2 filename
         // 3 encrypt/decrypt
-        //
+        // 4 cipher
+
         if(enable){
             long unixTime = Instant.now().getEpochSecond();
             File file = new File(Configuration.instance.logDirectory + strings.get(3) + "_" + strings.get(1) + "_" + unixTime + ".txt");
             file.createNewFile();
             FileWriter writer = new FileWriter(file);
-            writer.write("starting encryption");
+            writer.write("starting " + strings.get(3));
+            writer.write("plain text: " + strings.get(0)+ "   |   cipher: " + strings.get(4));
+            writer.write(strings.get(3) + " finished");
+            writer.close();
         }
     }
 
