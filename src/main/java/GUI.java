@@ -1,5 +1,7 @@
 import configuration.Configuration;
+import factory.RSACrackerFactory;
 import factory.RSAFactory;
+import factory.ShiftCrackerFactory;
 import factory.ShiftFactory;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -146,10 +148,15 @@ public class GUI extends Application {
         }
         else if(input.contains("crack encrypted message")){
             if (input.contains("using shift")){
-                //
+                Object shiftCracker = ShiftCrackerFactory.build();
+                Method encryptMethod = shiftCracker.getClass().getMethod("decrypt", String.class);
+                return (String) encryptMethod.invoke(shiftCracker, parameterList.get(0));
             }
             else if (input.contains("using rsa")){
-
+                File file = new File(Configuration.instance.keyDirectory+parameterList.get(1));
+                Object rsaCracker = RSACrackerFactory.build();
+                Method encryptMethod = rsaCracker.getClass().getMethod("decrypt", String.class, File.class);
+                return (String) encryptMethod.invoke(rsaCracker, parameterList.get(0), file);
             }
         }
         else if(input.contains("register participant")){
