@@ -13,6 +13,51 @@
           </set>
         </option>
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/rsa/01_component" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/rsa/01_component" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/rsa_cracker/01_component" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/rsa_cracker/01_component" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/shift/01_component" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/shift/01_component" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/shift_cracker/01_component" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/shift_cracker/01_component" />
+          </set>
+        </option>
+      </GradleProjectSettings>
     </option>
   </component>
 </project>
