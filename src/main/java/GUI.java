@@ -105,7 +105,7 @@ public class GUI extends Application {
 
         if (input.contains("encrypt message")){
             String cipher = "";
-            File file = new File(Configuration.instance.publicKeyFile);
+            File file = new File(Configuration.instance.fileDirectory+parameterList.get(2));
             parameterList.add("encrypt");
             if(parameterList.get(1).equals("rsa")){
                 //cipher = rsa.encrypt(parameterList.get(0),file);
@@ -120,22 +120,18 @@ public class GUI extends Application {
         }
         else if(input.contains("decrypt message")){
             String cipher = "";
+            File file = new File(Configuration.instance.fileDirectory+parameterList.get(2));
+            parameterList.add("decrypt");
             if(parameterList.get(1).equals("rsa")){
-                File file = new File(Configuration.instance.publicKeyFile);
                 //cipher = rsa.encrypt(parameterList.get(0),file);
-                parameterList.add("decrypt");
                 parameterList.add(cipher);
-                log.newFile(parameterList);
-                return cipher;
             }
             else if (parameterList.get(1).equals("shift")){
-                File file = new File(Configuration.instance.publicKeyFile);
-                //cipher = rsa.encrypt(parameterList.get(0),file);
-                parameterList.add("decrypt");
+                //cipher = shift.encrypt(parameterList.get(0),file);
                 parameterList.add(cipher);
-                log.newFile(parameterList);
-                return cipher;
             }
+            log.newFile(parameterList);
+            return cipher;
         }
         else if(input.contains("crack encrypted message")){
             if (input.contains("using shift")){
