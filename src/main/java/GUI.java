@@ -1,3 +1,4 @@
+import com.jcabi.aspects.Timeable;
 import configuration.Configuration;
 import factory.RSACrackerFactory;
 import factory.RSAFactory;
@@ -21,7 +22,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.*;
 
 
 public class GUI extends Application {
@@ -147,16 +150,25 @@ public class GUI extends Application {
             return cipher;
         }
         else if(input.contains("crack encrypted message")){
+            String ecryptedMessage = "";
             if (input.contains("using shift")){
                 Object shiftCracker = ShiftCrackerFactory.build();
                 Method encryptMethod = shiftCracker.getClass().getMethod("decrypt", String.class);
-                return (String) encryptMethod.invoke(shiftCracker, parameterList.get(0));
+                ecryptedMessage = (String) encryptMethod.invoke(shiftCracker, parameterList.get(0));
+                return ecryptedMessage;
             }
             else if (input.contains("using rsa")){
-                File file = new File(Configuration.instance.keyDirectory+parameterList.get(1));
-                Object rsaCracker = RSACrackerFactory.build();
-                Method encryptMethod = rsaCracker.getClass().getMethod("decrypt", String.class, File.class);
-                return (String) encryptMethod.invoke(rsaCracker, parameterList.get(0), file);
+
+                Callable<String> callableEncryptedMessage = new RsaCrackEncrypted(parameterList);
+                ExecutorService executorService = Executors.newCachedThreadPool();
+                Future<String> callableEncryptedMessageResult = executorService.submit(callableEncryptedMessage);
+                try {
+                    ecryptedMessage = callableEncryptedMessageResult.get(30, TimeUnit.SECONDS);
+                } catch (Exception e){
+                    ecryptedMessage = "cracking encrypted message [" + parameterList.get(0) +"] failed";
+                }
+
+                return ecryptedMessage;
             }
         }
         else if(input.contains("register participant")){
@@ -210,5 +222,26 @@ public class GUI extends Application {
         System.out.println(file.getAbsolutePath());
         Method encryptMethod = strategy.getClass().getMethod("decrypt", String.class, File.class);
         return (String) encryptMethod.invoke(strategy, parameterList.get(0) ,file);
+    }
+
+    private String rsaCrackEncrypted(List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        File file = new File(Configuration.instance.keyDirectory+parameterList.get(1));
+        Object rsaCracker = RSACrackerFactory.build();
+        Method encryptMethod = rsaCracker.getClass().getMethod("decrypt", String.class, File.class);
+        return (String) encryptMethod.invoke(rsaCracker, parameterList.get(0), file);
+    }
+
+    class RsaCrackEncrypted implements Callable<String>
+    {
+        private final List<String> parameterList;
+
+        RsaCrackEncrypted( List<String> parameterList )
+        {
+            this.parameterList = parameterList;
+        }
+
+        @Override public String call() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+            return rsaCrackEncrypted(parameterList);
+        }
     }
 }
