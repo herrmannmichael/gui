@@ -314,6 +314,70 @@ public enum HSQLDB {
         return sqlStringBuilder01.toString();
     }
 
+    public String createChannel(String channelName, String participant01, String participant02) throws SQLException {
+        if(doesChannelNameExist(channelName)){
+            return "channel [" +  channelName + "] already exists";
+        }
+        else if(doesChannelWithParticipantsExist(participant01, participant02)){
+            return "communication channel between participant01 [" + participant01 + "] and participant02 [" + participant02 + "] already exists";
+        }
+        else if(participant01.equals(participant02)){
+            return "participant01 [" + participant01 + "] and participant02 [" + participant02 + "] are identical – cannot create channel on itself";
+        }
+        else {
+            String participant01Query = "SELECT COUNT(name) AS count FROM participants WHERE name = " + participant01;
+            ResultSet resultPar01 = select(participant01Query);
+            resultPar01.next();
+            int countParticipant01 = resultPar01.getInt("count");
+            int participant01ID = 0;
+            if(countParticipant01 > 0){
+                participant01ID = resultPar01.getInt("id");
+            }
+            else
+                return "participant01 [" + participant01 + "] not found";
+
+            String participant02Query = "SELECT COUNT(name) AS count FROM participants WHERE name = " + participant02;
+            ResultSet resultPar02 = select(participant01Query);
+            resultPar02.next();
+            int countParticipant02 = resultPar02.getInt("count");
+            int participant02ID = 0;
+            if(countParticipant02 > 0){
+                participant02ID = resultPar02.getInt("id");
+            }
+            else
+                return "participant02 [" + participant02 + "] not found";
+
+            String query = "INSERT INTO channel VALUES('" + channelName + "'," + participant01ID + "," + participant02ID + ")";
+            update(query);
+
+            return "channel [" + channelName + "] from [" + participant01 + "] to [" + participant02 +"] successfullycreated";
+        }
+    }
+
+    private boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
+        String query = "SELECT COUNT(name) AS count FROM channel WHERE participant_01 = '" + participant01 + "' AND participant_02 = '" + participant02 + "'" +
+                " OR participant_01 = '" + participant02 + "' AND participant_02 = '" + participant01 + "'";
+        ResultSet result = select(query);
+        result.next();
+        int count = result.getInt("count");
+        if(count > 0){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean doesChannelNameExist(String channelName) throws SQLException {
+        String query = "SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'";
+        ResultSet result = select(query);
+        result.next();
+        int count = result.getInt("count");
+        if(count > 0){
+            return true;
+        }
+        return false;
+    }
+
+
     public String dropChannel(String channelName) throws SQLException {
         String query = "SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'";
         ResultSet result = select(query);

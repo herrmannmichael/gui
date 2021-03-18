@@ -110,7 +110,7 @@ public class GUI extends Application {
         primaryStage.show();
     }
 
-    private String executeCommand(String input) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private String executeCommand(String input) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, SQLException {
         List<String> parameterList = extractParametersFromBrackets(input);
 
         // Log List Items
@@ -183,7 +183,7 @@ public class GUI extends Application {
 
         }
         else if(input.contains("create channel")){
-
+            return HSQLDB.instance.createChannel(parameterList.get(0), parameterList.get(1), parameterList.get(2));
         }
         else if(input.contains("show channel")){
 
