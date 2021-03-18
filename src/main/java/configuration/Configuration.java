@@ -17,9 +17,6 @@ public enum Configuration {
     public String commonPathToJavaArchive = userDirectory + fileSeparator + "components" + fileSeparator;
     public String componentFolderName = "01_component";
 
-
-    public String logDirectory = userDirectory + fileSeparator + "log" + fileSeparator;
-
     public String inputDataFile = logDirectory + fileSeparator + "input.txt";
     public String encryptedDataFile = logDirectory + fileSeparator + "encrypted.txt";
 
