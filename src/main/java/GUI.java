@@ -1,5 +1,6 @@
 import configuration.Configuration;
 import factory.RSAFactory;
+import factory.ShiftFactory;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class GUI extends Application {
 
-    private Log log = new Log();
+    private final Log log = new Log();
     public void start(Stage primaryStage) {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
 
@@ -108,17 +109,18 @@ public class GUI extends Application {
 
         if (input.contains("encrypt message")){
             String cipher = "";
-            File file = new File(Configuration.instance.fileDirectory+parameterList.get(2));
+
             parameterList.add("encrypt");
             if(parameterList.get(1).equals("rsa")){
                 //cipher = rsa.encrypt(parameterList.get(0),file);
                 Object rsa = RSAFactory.build();
-                Method encryptMethod = rsa.getClass().getMethod("encrypt", String.class, File.class);
-                cipher = (String) encryptMethod.invoke(rsa, parameterList.get(0) ,file);
+                cipher = encrypt(rsa, parameterList);
                 parameterList.add(cipher);
             }
             else if (parameterList.get(1).equals("shift")){
                 //cipher = shift.encrypt(parameterList.get(0),file);
+                Object shift = ShiftFactory.build();
+                cipher = encrypt(shift, parameterList);
                 parameterList.add(cipher);
             }
             log.newFile(parameterList);
@@ -126,14 +128,17 @@ public class GUI extends Application {
         }
         else if(input.contains("decrypt message")){
             String cipher = "";
-            File file = new File(Configuration.instance.fileDirectory+parameterList.get(2));
             parameterList.add("decrypt");
             if(parameterList.get(1).equals("rsa")){
                 //cipher = rsa.encrypt(parameterList.get(0),file);
+                Object rsa = RSAFactory.build();
+                cipher = decrypt(rsa, parameterList);
                 parameterList.add(cipher);
             }
             else if (parameterList.get(1).equals("shift")){
                 //cipher = shift.encrypt(parameterList.get(0),file);
+                Object shift = ShiftFactory.build();
+                cipher = decrypt(shift, parameterList);
                 parameterList.add(cipher);
             }
             log.newFile(parameterList);
@@ -186,4 +191,17 @@ public class GUI extends Application {
         return new ArrayList<>();
     }
 
+    private String encrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        File file = new File(Configuration.instance.keyDirectory+parameterList.get(2));
+        System.out.println(file.getAbsolutePath());
+        Method encryptMethod = strategy.getClass().getMethod("encrypt", String.class, File.class);
+        return (String) encryptMethod.invoke(strategy, parameterList.get(0) ,file);
+    }
+
+    private String decrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        File file = new File(Configuration.instance.keyDirectory+parameterList.get(2));
+        System.out.println(file.getAbsolutePath());
+        Method encryptMethod = strategy.getClass().getMethod("decrypt", String.class, File.class);
+        return (String) encryptMethod.invoke(strategy, parameterList.get(0) ,file);
+    }
 }

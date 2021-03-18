@@ -1,12 +1,13 @@
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Cipher {
     // static instance
@@ -26,35 +27,36 @@ public class Cipher {
 
     // inner methods
 
-    public String innerEncrypt(String plainMessage, File publicKeyfile) throws IOException, ParseException {
+    public String innerEncrypt(String plainMessage, File publicKeyfile) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         byte[] bytes = plainMessage.getBytes(Charset.defaultCharset());
-        byte[] encrypted = crypt(new BigInteger(bytes), readKey(publicKeyfile)).toByteArray();
+        //byte[] encrypted = crypt(new BigInteger(bytes), readKey(publicKeyfile)).toByteArray();
 
-        for(byte character: encrypted){
-            stringBuilder.append(String.valueOf(character));
+        Key key = readKey(publicKeyfile);
+
+        for(byte character: bytes){
+            stringBuilder.append(crypt(new BigInteger(String.valueOf(character)), key));
+            stringBuilder.append(",");
         }
 
         return stringBuilder.toString();
     }
 
-    public String innerDecrypt(String encryptedMessage, File privateKeyfile) throws IOException, ParseException {
+    public String innerDecrypt(String encryptedMessage, File privateKeyfile) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        byte[] bytes = encryptedMessage.getBytes(Charset.defaultCharset());
-        byte[] encrypted = crypt(new BigInteger(bytes), readKey(privateKeyfile)).toByteArray();
+        Key key = readKey(privateKeyfile);
+        encryptedMessage = encryptedMessage.replaceAll(",", "");
 
-        for(byte character: encrypted){
-            stringBuilder.append(String.valueOf(character));
-        }
+        stringBuilder.append(crypt(new BigInteger(String.valueOf(encryptedMessage)), key));
 
         return stringBuilder.toString();
     }
 
-    private Key readKey(File keyfile) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject object = (JSONObject) parser.parse(new FileReader(keyfile));
+    private Key readKey(File keyfile) throws IOException {
+        String content = Files.readString(Path.of(keyfile.getPath()), StandardCharsets.US_ASCII);
+        JSONObject object = new JSONObject(content);
 
         BigInteger nKey =  new BigInteger((String)object.get("n"));
         BigInteger eKey =  new BigInteger((String)object.get("e"));
@@ -69,12 +71,12 @@ public class Cipher {
     // inner class port
     public class Port implements ICipher {
         @Override
-        public String encrypt(String plainMessage, File publicKeyfile) throws IOException, ParseException {
+        public String encrypt(String plainMessage, File publicKeyfile) throws IOException {
             return innerEncrypt(plainMessage, publicKeyfile);
         }
 
         @Override
-        public String decrypt(String encryptedMessage, File privateKeyfile) throws IOException, ParseException {
+        public String decrypt(String encryptedMessage, File privateKeyfile) throws IOException {
             return innerDecrypt(encryptedMessage, privateKeyfile);
         }
     }

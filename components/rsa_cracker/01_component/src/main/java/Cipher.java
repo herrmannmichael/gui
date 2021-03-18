@@ -1,18 +1,19 @@
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 public class Cipher {
     // static instance
-    private static Cipher instance = new Cipher();
+    private static final Cipher instance = new Cipher();
     // port
     public Port port;
 
@@ -27,19 +28,21 @@ public class Cipher {
     }
 
     // inner methods
-    public String innerDecrypt(String encryptedMessage, File privateKeyfile) throws IOException, ParseException, RSACrackerException {
+    public String innerDecrypt(String  encryptedMessage, File publicKeyFile) throws IOException, RSACrackerException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        BigInteger plainmessage = execute(readKey(privateKeyfile), new BigInteger(encryptedMessage));
+        Key key = readKey(publicKeyFile);
+
+        BigInteger plainmessage = execute(key, new BigInteger(encryptedMessage));
 
         stringBuilder.append(plainmessage);
 
         return stringBuilder.toString();
     }
 
-    private Key readKey(File keyfile) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject object = (JSONObject) parser.parse(new FileReader(keyfile));
+    private Key readKey(File keyfile) throws IOException {
+        String content = Files.readString(Path.of(keyfile.getPath()), StandardCharsets.US_ASCII);
+        JSONObject object = new JSONObject(content);
 
         BigInteger nKey =  new BigInteger((String)object.get("n"));
         BigInteger eKey =  new BigInteger((String)object.get("e"));
@@ -94,8 +97,8 @@ public class Cipher {
     // inner class port
     public class Port implements ICipher {
         @Override
-        public String decrypt(String encryptedMessage, File privateKeyfile) throws IOException, ParseException, RSACrackerException {
-            return innerDecrypt(encryptedMessage, privateKeyfile);
+        public String decrypt(String  encryptedMessage, File publicKeyFile) throws IOException, RSACrackerException {
+            return innerDecrypt(encryptedMessage, publicKeyFile);
         }
     }
 }

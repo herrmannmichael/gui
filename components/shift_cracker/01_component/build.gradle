@@ -9,10 +9,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-}
-
 task build_jar(type: Jar) {
     project.archivesBaseName = "shift_cracker"
 

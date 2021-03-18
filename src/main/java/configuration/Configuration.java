@@ -10,12 +10,6 @@ public enum Configuration {
 
     public String keyDirectory = userDirectory + fileSeparator + "key" + fileSeparator;
 
-    public String fileDirectory = logDirectory + fileSeparator;
-
-    public String keyFile = logDirectory + fileSeparator + "keyfile.json";
-    public String publicKeyFile = logDirectory + fileSeparator + "publicKeyfile.json";
-    public String privateKeyFile = logDirectory + fileSeparator + "privateKeyfile.json";
-
     public String commonPathToJavaArchive = userDirectory + fileSeparator + "components" + fileSeparator;
     public String componentFolderName = "01_component";
 

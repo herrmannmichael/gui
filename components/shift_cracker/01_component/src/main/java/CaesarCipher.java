@@ -1,15 +1,8 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.text.DecimalFormat;
 
 public class CaesarCipher {
     // static instance
-    private static CaesarCipher instance = new CaesarCipher();
+    private static final CaesarCipher instance = new CaesarCipher();
     // port
     public Port port;
 
@@ -24,6 +17,7 @@ public class CaesarCipher {
     }
 
     // inner methods
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#0.00000");
 
     public String innerDecrypt(String encryptedMessage) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -31,6 +25,8 @@ public class CaesarCipher {
         if (encryptedMessage.equals("")) {
             System.exit(0);
         }
+
+        encryptedMessage = encryptedMessage.toUpperCase();
 
         char[] sourceText = new char[encryptedMessage.length()];
         int[] unicode = new int[encryptedMessage.length()];
@@ -52,7 +48,6 @@ public class CaesarCipher {
 
         for (int shift = 1; shift <= 25; shift++) {
             stringBuilder.append(smartShift(shift, unicode, unicodeCopy));
-            stringBuilder.append(",");
         }
 
         return stringBuilder.toString();
@@ -80,13 +75,49 @@ public class CaesarCipher {
             finalProcess[count] = intToChar;
         }
 
+        double frequency = 0;
+        double aFrequency = 0;
+        double eFrequency = 0;
+        double iFrequency = 0;
+        double oFrequency = 0;
+        double uFrequency = 0;
+
+        for (char c : finalProcess) {
+            frequency++;
+
+            switch (c) {
+                case 'A':
+                    aFrequency++;
+                    break;
+                case 'E':
+                    eFrequency++;
+                    break;
+                case 'I':
+                    iFrequency++;
+                    break;
+                case 'O':
+                    oFrequency++;
+                    break;
+                case 'U':
+                    uFrequency++;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         StringBuilder stringBuilder = new StringBuilder();
 
         for (char character : finalProcess) {
             stringBuilder.append(character);
         }
 
-        return stringBuilder.toString();
+        if (eFrequency / frequency >= 0.05 || aFrequency / frequency >= 0.05 || iFrequency / frequency >= 0.05 || oFrequency / frequency >= 0.05 || uFrequency / frequency >= 0.05) {
+            stringBuilder.append(',');
+            return stringBuilder.toString();
+        }
+
+        return "";
     }
 
     // inner class port
