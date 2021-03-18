@@ -20,6 +20,7 @@ dependencies {
                      [group: 'org.hsqldb', name: 'hsqldb', version: '2.5.1'])
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile 'org.hibernate:hibernate-core:5.4.27.Final'
 }
 
 compileJava {

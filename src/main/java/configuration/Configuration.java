@@ -3,8 +3,13 @@ package configuration;
 public enum Configuration {
     instance;
 
+    public final String driverName = "jdbc:hsqldb:";
+    public final String username = "sa";
+    public final String password = "";
     public String userDirectory = System.getProperty("user.dir");
     public String fileSeparator = System.getProperty("file.separator");
+    public String dataDirectory = userDirectory + fileSeparator + "data" + fileSeparator;
+    public String databaseFile = dataDirectory + "datastore.db";
 
     public String logDirectory = userDirectory + fileSeparator + "log" + fileSeparator;
 

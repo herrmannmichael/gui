@@ -26,6 +26,7 @@ public class GUI extends Application {
     private Log log = new Log();
     public void start(Stage primaryStage) {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
+        HSQLDB.instance.setupDatabase();
 
 
         HBox hBox = new HBox();
@@ -60,6 +61,7 @@ public class GUI extends Application {
         closeButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent actionEvent) {
                 System.out.println("[close] pressed");
+                HSQLDB.instance.shutdown();
                 System.exit(0);
             }
         });
@@ -111,7 +113,6 @@ public class GUI extends Application {
             File file = new File(Configuration.instance.fileDirectory+parameterList.get(2));
             parameterList.add("encrypt");
             if(parameterList.get(1).equals("rsa")){
-                //cipher = rsa.encrypt(parameterList.get(0),file);
                 Object rsa = RSAFactory.build();
                 Method encryptMethod = rsa.getClass().getMethod("encrypt", String.class, File.class);
                 cipher = (String) encryptMethod.invoke(rsa, parameterList.get(0) ,file);
