@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +31,16 @@ import java.util.concurrent.*;
 public class GUI extends Application {
 
     private final Log log = new Log();
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws SQLException {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
         HSQLDB.instance.setupDatabase();
-
+        System.out.println(HSQLDB.instance.registerParticipant("branch_hkg","normal"));
+        System.out.println(HSQLDB.instance.registerParticipant("branch_cpt","normal"));
+        System.out.println(HSQLDB.instance.registerParticipant("branch_sfo","normal"));
+        System.out.println(HSQLDB.instance.registerParticipant("branch_syd","normal"));
+        System.out.println(HSQLDB.instance.registerParticipant("branch_wuh","normal"));
+        System.out.println(HSQLDB.instance.registerParticipant("msa","intruder"));
+        HSQLDB.instance.shutdown();
 
         HBox hBox = new HBox();
         hBox.setPadding(new Insets(15, 12, 15, 12));
