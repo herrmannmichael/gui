@@ -365,7 +365,7 @@ public enum HSQLDB {
         }
 
         String participant02Query = "SELECT COUNT(name) AS count FROM participants WHERE name = " + participant02;
-        ResultSet resultPar02 = select(participant01Query);
+        ResultSet resultPar02 = select(participant02Query);
         resultPar02.next();
         int countParticipant02 = resultPar02.getInt("count");
         int participant02ID = 0;
