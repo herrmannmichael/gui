@@ -355,8 +355,29 @@ public enum HSQLDB {
     }
 
     private boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
-        String query = "SELECT COUNT(name) AS count FROM channel WHERE participant_01 = '" + participant01 + "' AND participant_02 = '" + participant02 + "'" +
-                " OR participant_01 = '" + participant02 + "' AND participant_02 = '" + participant01 + "'";
+        String participant01Query = "SELECT COUNT(name) AS count FROM participants WHERE name = " + participant01;
+        ResultSet resultPar01 = select(participant01Query);
+        resultPar01.next();
+        int countParticipant01 = resultPar01.getInt("count");
+        int participant01ID = 0;
+        if(countParticipant01 > 0){
+            participant01ID = resultPar01.getInt("id");
+        }
+
+        String participant02Query = "SELECT COUNT(name) AS count FROM participants WHERE name = " + participant02;
+        ResultSet resultPar02 = select(participant01Query);
+        resultPar02.next();
+        int countParticipant02 = resultPar02.getInt("count");
+        int participant02ID = 0;
+        if(countParticipant02 > 0){
+            participant02ID = resultPar02.getInt("id");
+        }
+
+
+        String query = "SELECT COUNT(name) AS count FROM channel WHERE participant_01 = '" + participant01ID + "' AND participant_02 = '" + participant02ID + "'" +
+                " OR participant_01 = '" + participant02ID + "' AND participant_02 = '" + participant01ID + "'";
+
+        System.out.println(query);
         ResultSet result = select(query);
         result.next();
         int count = result.getInt("count");
@@ -401,7 +422,9 @@ public enum HSQLDB {
     private synchronized ResultSet select(String sqlStatement){
         try {
             Statement statement = connection.createStatement();
-            return statement.executeQuery(sqlStatement);
+            ResultSet resultSet = statement.executeQuery(sqlStatement);
+            statement.close();
+            return resultSet;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;
