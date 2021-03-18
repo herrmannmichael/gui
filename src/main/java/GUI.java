@@ -101,24 +101,22 @@ public class GUI extends Application {
         // 2 filename
         // 3 encrypt/decrypt
         // 4 cipher
+
+
         if (input.contains("encrypt message")){
             String cipher = "";
+            File file = new File(Configuration.instance.publicKeyFile);
+            parameterList.add("encrypt");
             if(parameterList.get(1).equals("rsa")){
-                File file = new File(Configuration.instance.publicKeyFile);
                 //cipher = rsa.encrypt(parameterList.get(0),file);
-                parameterList.add("encrypt");
                 parameterList.add(cipher);
-                log.newFile(parameterList);
-                return cipher;
             }
             else if (parameterList.get(1).equals("shift")){
-                File file = new File(Configuration.instance.publicKeyFile);
                 //cipher = shift.encrypt(parameterList.get(0),file);
-                parameterList.add("encrypt");
                 parameterList.add(cipher);
-                log.newFile(parameterList);
-                return cipher;
             }
+            log.newFile(parameterList);
+            return cipher;
         }
         else if(input.contains("decrypt message")){
             String cipher = "";
