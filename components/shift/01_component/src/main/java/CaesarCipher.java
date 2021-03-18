@@ -1,15 +1,16 @@
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class CaesarCipher {
     // static instance
-    private static CaesarCipher instance = new CaesarCipher();
+    private static final CaesarCipher instance = new CaesarCipher();
     // port
     public Port port;
 
@@ -25,7 +26,7 @@ public class CaesarCipher {
 
     // inner methods
 
-    public String innerEncrypt(String plainMessage, File keyfile) throws IOException, ParseException {
+    public String innerEncrypt(String plainMessage, File keyfile) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < plainMessage.length(); i++) {
@@ -36,7 +37,7 @@ public class CaesarCipher {
         return stringBuilder.toString();
     }
 
-    public String innerDecrypt(String encryptedMessage, File keyfile) throws IOException, ParseException {
+    public String innerDecrypt(String encryptedMessage, File keyfile) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < encryptedMessage.length(); i++) {
@@ -47,23 +48,23 @@ public class CaesarCipher {
         return stringBuilder.toString();
     }
 
-    private int readKey(File keyfile) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject object = (JSONObject) parser.parse(new FileReader(keyfile));
+    private int readKey(File keyfile) throws IOException {
+        String content = Files.readString(Path.of(keyfile.getPath()), StandardCharsets.US_ASCII);
+        JSONObject object = new JSONObject(content);
         String keyString = (String) object.get("key");
-        return Integer.getInteger(keyString);
+        return Integer.parseInt(keyString);
     }
 
     // inner class port
     public class Port implements ICaesarCipher {
 
         @Override
-        public String encrypt(String plainMessage, File keyfile) throws IOException, ParseException {
+        public String encrypt(String plainMessage, File keyfile) throws IOException {
             return innerEncrypt(plainMessage, keyfile);
         }
 
         @Override
-        public String decrypt(String encryptedMessage, File keyfile) throws IOException, ParseException {
+        public String decrypt(String encryptedMessage, File keyfile) throws IOException {
             return innerDecrypt(encryptedMessage, keyfile);
         }
     }

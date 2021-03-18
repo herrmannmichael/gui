@@ -9,7 +9,7 @@
         <option name="gradleHome" value="$PROJECT_DIR$/../../../../../../../../../../gradle" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/../../../../../../Semester 4/Kryptographie/Komplexaufgabe/components/rsa_cracker/01_component" />
+            <option value="$PROJECT_DIR$/../../../../../../../Semester 4/Kryptographie/Komplexaufgabe/gui/components/rsa_cracker/01_component" />
           </set>
         </option>
       </GradleProjectSettings>

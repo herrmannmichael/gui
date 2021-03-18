@@ -22,8 +22,8 @@ public class Log {
             File file = new File(Configuration.instance.logDirectory + strings.get(3) + "_" + strings.get(1) + "_" + unixTime + ".txt");
             file.createNewFile();
             FileWriter writer = new FileWriter(file);
-            writer.write("starting " + strings.get(3));
-            writer.write("plain text: " + strings.get(0)+ "   |   cipher: " + strings.get(4));
+            writer.write("starting " + strings.get(3)  + "\n\r");
+            writer.write("plain text: " + strings.get(0)+ "   |   cipher: " + strings.get(4) + "\n\r");
             writer.write(strings.get(3) + " finished");
             writer.close();
         }
