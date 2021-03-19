@@ -325,7 +325,7 @@ public enum HSQLDB {
             return "participant01 [" + participant01 + "] and participant02 [" + participant02 + "] are identical – cannot create channel on itself";
         }
         else {
-            String participant01Query = "SELECT id AS count FROM participants WHERE name = '" + participant01 + "'";
+            String participant01Query = "SELECT id FROM participants WHERE name = '" + participant01 + "'";
             ResultSet resultPar01 = select(participant01Query);
             resultPar01.next();
             int participant01ID;
@@ -336,7 +336,7 @@ public enum HSQLDB {
                 return "participant01 [" + participant01 + "] not found";
             }
 
-            String participant02Query = "SELECT id AS count FROM participants WHERE name = '" + participant02 + "'";
+            String participant02Query = "SELECT id FROM participants WHERE name = '" + participant02 + "'";
             ResultSet resultPar02 = select(participant02Query);
             resultPar02.next();
             int participant02ID;
@@ -350,17 +350,19 @@ public enum HSQLDB {
             String query = "INSERT INTO channel VALUES('" + channelName + "'," + participant01ID + "," + participant02ID + ")";
             update(query);
 
+            Channel.addChannel(channelName, new Channel(channelName));
+
             return "channel [" + channelName + "] from [" + participant01 + "] to [" + participant02 +"] successfully created";
         }
     }
 
     public boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
-        String participant01Query = "SELECT id AS count FROM participants WHERE name = '" + participant01 + "'";
+        String participant01Query = "SELECT id FROM participants WHERE name = '" + participant01 + "'";
         ResultSet resultPar01 = select(participant01Query);
         resultPar01.next();
         int participant01ID = resultPar01.getInt("id");
 
-        String participant02Query = "SELECT id AS count FROM participants WHERE name = '" + participant02 + "'";
+        String participant02Query = "SELECT id FROM participants WHERE name = '" + participant02 + "'";
         ResultSet resultPar02 = select(participant02Query);
         resultPar02.next();
         int participant02ID = resultPar02.getInt("id");
