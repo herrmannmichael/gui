@@ -415,8 +415,12 @@ public enum HSQLDB {
         return resultSet.getInt("id");
     }
 
-    public void initChannelsFromDB(){
-
+    public void initChannelsFromDB() throws SQLException {
+        ResultSet resultSet = select("SELECT name FROM channel");
+        while (resultSet.next()){
+            String channelName = resultSet.getString("name");
+            Channel.addChannel(channelName, new Channel(channelName));
+        }
     }
 
     private int count(String query) throws SQLException {
