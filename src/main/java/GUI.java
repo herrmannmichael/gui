@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -102,7 +103,13 @@ public class GUI extends Application {
                             e.printStackTrace();
                         }
                     }
-                    case F8 -> System.out.println("F8");
+                    case F8 -> {
+                        try {
+                            outputArea.setText(log.getLogFile());
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         });
