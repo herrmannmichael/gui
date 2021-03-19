@@ -55,10 +55,13 @@ public class Channel {
         HSQLDB.instance.logPostbox(messageReceived.getFromParticipant(), messageReceived.getToParticipant(), decryptedMessage);
 
         for (String intruder: intruderList){
+            System.out.println("intruder is listening");
             String decryptedMessageByIntruder = "unknown";
             HSQLDB.instance.logPostbox(messageReceived.getFromParticipant(), intruder, decryptedMessageByIntruder);
+            tmpParameterList = new ArrayList<>();
             tmpParameterList.add(messageReceived.encryptedMessage());
-            tmpParameterList.add(messageReceived.getAlgorithm());
+            System.out.println("key file" + messageReceived.getKeyfile());
+            tmpParameterList.add(messageReceived.getKeyfile());
             try{
                 switch (messageReceived.getAlgorithm()){
                     case "rsa" -> decryptedMessageByIntruder = gui.rsaCrackEncryptedWithin30Seconds(tmpParameterList);
@@ -68,12 +71,12 @@ public class Channel {
                 HSQLDB.instance.updateIntruderPostbox(decryptedMessageByIntruder);
 
                 gui.getOutputArea().setText("intruder ["+ intruder +"] cracked message from participant " +
-                        "["+messageReceived.getFromParticipant()+"] | [" + decryptedMessageByIntruder + "]");
+                        "["+messageReceived.getFromParticipant()+"] | [" + decryptedMessageByIntruder + "]\n" + gui.getOutputArea().getText());
             }
             catch (Exception e){
-
+                e.printStackTrace();
                 gui.getOutputArea().setText("intruder [" + intruder + "] | crack message from participant " +
-                        "["+ messageReceived.getFromParticipant() +"] failed");
+                        "["+ messageReceived.getFromParticipant() +"] failed \n" + gui.getOutputArea().getText());
             }
         }
     }

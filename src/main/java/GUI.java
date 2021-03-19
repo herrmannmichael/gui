@@ -65,7 +65,7 @@ public class GUI extends Application {
         executeButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 try {
-                    outputArea.setText(executeCommand(commandLineArea.getText()));
+                    outputArea.setText(executeCommand(commandLineArea.getText()) + "\n" + outputArea.getText());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -97,7 +97,7 @@ public class GUI extends Application {
                     case F3 -> log.toggleEnable();
                     case F5 -> {
                         try {
-                            outputArea.setText(executeCommand(commandLineArea.getText()));
+                            outputArea.setText(executeCommand(commandLineArea.getText()) + "\n" + outputArea.getText());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -188,7 +188,7 @@ public class GUI extends Application {
         }
         else if(input.contains("intrude channel")){
             if(Channel.getChannels().containsKey(parameterList.get(0))){
-
+                Channel.getChannels().get(parameterList.get(0)).intrude(parameterList.get(1));
             }
             else {
                 return "channel " + parameterList.get(0) + " does not exist";
