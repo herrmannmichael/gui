@@ -36,6 +36,7 @@ public class GUI extends Application {
     public void start(Stage primaryStage) throws SQLException {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
         HSQLDB.instance.setupDatabase();
+        HSQLDB.instance.initChannelsFromDB();
         System.out.println(HSQLDB.instance.registerParticipant("branch_hkg","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_cpt","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_sfo","normal"));
