@@ -130,7 +130,6 @@ public class GUI extends Application {
                 parameterList.add(cipher);
             }
             else if (parameterList.get(1).equals("shift")){
-                //cipher = shift.encrypt(parameterList.get(0),file);
                 Object shift = ShiftFactory.build();
                 cipher = encrypt(shift, parameterList);
                 parameterList.add(cipher);
@@ -142,13 +141,11 @@ public class GUI extends Application {
             String cipher = "";
             parameterList.add("decrypt");
             if(parameterList.get(1).equals("rsa")){
-                //cipher = rsa.encrypt(parameterList.get(0),file);
                 Object rsa = RSAFactory.build();
                 cipher = decrypt(rsa, parameterList);
                 parameterList.add(cipher);
             }
             else if (parameterList.get(1).equals("shift")){
-                //cipher = shift.encrypt(parameterList.get(0),file);
                 Object shift = ShiftFactory.build();
                 cipher = decrypt(shift, parameterList);
                 parameterList.add(cipher);
@@ -198,7 +195,16 @@ public class GUI extends Application {
 
         }
         else if(input.contains("send message")){
-
+            if(HSQLDB.instance.doesChannelWithParticipantsExist(parameterList.get(1),parameterList.get(2))){
+                List<String> tmpParameterList = new ArrayList<>();
+                tmpParameterList.add(parameterList.get(0));
+                tmpParameterList.add(parameterList.get(3));
+                tmpParameterList.add(parameterList.get(4));
+                encrypt(parameterList.get(3),tmpParameterList);
+            }
+            else {
+                return "no valid channel from ["+parameterList.get(1)+"] to ["+parameterList.get(2)+"]";
+            }
         }
         return "";
     }

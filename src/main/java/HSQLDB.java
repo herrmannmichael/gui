@@ -354,7 +354,7 @@ public enum HSQLDB {
         }
     }
 
-    private boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
+    public boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
         String participant01Query = "SELECT id AS count FROM participants WHERE name = '" + participant01 + "'";
         ResultSet resultPar01 = select(participant01Query);
         resultPar01.next();
@@ -390,6 +390,27 @@ public enum HSQLDB {
         return false;
     }
 
+    public String getChannelName(String participant1, String participant2) throws SQLException {
+        String query = "SELECT id FROM participants WHERE name = '" + participant1 + "'";
+        ResultSet resultParticipant1 = select(query);
+        resultParticipant1.next();
+        int participant01ID = resultParticipant1.getInt("id");
+
+        query = "SELECT id FROM participants WHERE name = '" + participant2 + "'";
+        ResultSet resultParticipant2 = select(query);
+        resultParticipant2.next();
+        int participant02ID = resultParticipant2.getInt("id");
+
+        query = "SELECT name FROM channel WHERE participant_01 = '" + participant01ID + "' AND participant_02 = '" + participant02ID + "'" +
+                " OR participant_01 = '" + participant02ID + "' AND participant_02 = '" + participant01ID + "'";
+
+        ResultSet result = select(query);
+        result.next();
+
+        String channel = result.getString("name");
+        return channel;
+    }
+
 
     public String dropChannel(String channelName) throws SQLException {
         String query = "SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'";
@@ -406,10 +427,6 @@ public enum HSQLDB {
             return "unknown channel ["+channelName+"]";
         }
     }
-
-
-
-
 
     private synchronized ResultSet select(String sqlStatement){
         try {
