@@ -34,6 +34,7 @@ public class GUI extends Application {
     public void start(Stage primaryStage) throws SQLException {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
         HSQLDB.instance.setupDatabase();
+        HSQLDB.instance.initChannelsFromDB();
         System.out.println(HSQLDB.instance.registerParticipant("branch_hkg","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_cpt","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_sfo","normal"));
@@ -200,7 +201,7 @@ public class GUI extends Application {
                 tmpParameterList.add(parameterList.get(0));
                 tmpParameterList.add(parameterList.get(3));
                 tmpParameterList.add(parameterList.get(4));
-                encrypt(parameterList.get(3),tmpParameterList);
+                String cipher = encrypt(parameterList.get(3),tmpParameterList);
             }
             else {
                 return "no valid channel from ["+parameterList.get(1)+"] to ["+parameterList.get(2)+"]";

@@ -1,6 +1,7 @@
 import configuration.Configuration;
 
 import java.sql.*;
+import java.time.Instant;
 
 public enum HSQLDB {
     instance;
@@ -259,17 +260,9 @@ public enum HSQLDB {
     }
 
     public String registerParticipant(String participantName, String type) throws SQLException {
-        String query = "SELECT COUNT(name) AS count FROM participants WHERE name = '" + participantName+"'";
-        ResultSet result = select(query);
-        result.next();
-        int count = result.getInt("count");
+        int count = count("SELECT COUNT(name) AS count FROM participants WHERE name = '" + participantName+"'");
+        int maxCount = count("SELECT COUNT(name) AS count FROM participants");
         int typeAsInt = 0;
-
-        query = "SELECT COUNT(name) AS count FROM participants";
-        ResultSet resultSet1 = select(query);
-        resultSet1.next();
-        int maxCount = resultSet1.getInt("count")+1;
-
 
         if(count==0){
             if(type.equals("normal")){
@@ -278,8 +271,7 @@ public enum HSQLDB {
             else if(type.equals("intruder")){
                 typeAsInt = 2;
             }
-            query = "INSERT INTO participants (id,name,type_id) VALUES ("+ maxCount +",'"+participantName+"',"+typeAsInt+");";
-            update(query);
+            update("INSERT INTO participants (id,name,type_id) VALUES ("+ maxCount +",'"+participantName+"',"+typeAsInt+");");
             createTablePostbox(participantName);
             return "participant ["+participantName+"] with type["+type+"] registered and postbox_["+participantName+"] created";
         }
@@ -289,27 +281,19 @@ public enum HSQLDB {
     }
 
     public String showChannel () throws SQLException {
-        String query = "SELECT name,participant_01, participant_02 FROM channel";
-        ResultSet resultSet = select(query);
-
+        ResultSet resultSet = select("SELECT name,participant_01, participant_02 FROM channel");
         StringBuilder sqlStringBuilder01 = new StringBuilder();
 
         while (resultSet.next()){
+            int participant01ID = resultSet.getInt("participant_01");
+            String participant01Name = getParticipantName(participant01ID);
+
+            int participant02ID = resultSet.getInt("participant_02");
+            String participant02Name = getParticipantName(participant02ID);
 
             sqlStringBuilder01.append(resultSet.getString("name")).append(" | ");
-            int par1 = resultSet.getInt("participant_01");
-            query = "SELECT name FROM participants WHERE id="+par1;
-            ResultSet resultSet1 = select(query);
-            resultSet1.next();
-            String parName1 = resultSet1.getString("name");
-            sqlStringBuilder01.append(parName1).append(" and ");
-
-            int par2 = resultSet.getInt("participant_02");
-            query = "SELECT name FROM participants WHERE id="+par2;
-            resultSet1 = select(query);
-            resultSet1.next();
-            String parName2 = resultSet1.getString("name");
-            sqlStringBuilder01.append(parName2).append("\n\r");
+            sqlStringBuilder01.append(participant01Name).append(" and ");
+            sqlStringBuilder01.append(participant02Name).append("\n\r");
         }
         return sqlStringBuilder01.toString();
     }
@@ -357,15 +341,8 @@ public enum HSQLDB {
     }
 
     public boolean doesChannelWithParticipantsExist(String participant01, String participant02) throws SQLException {
-        String participant01Query = "SELECT id FROM participants WHERE name = '" + participant01 + "'";
-        ResultSet resultPar01 = select(participant01Query);
-        resultPar01.next();
-        int participant01ID = resultPar01.getInt("id");
-
-        String participant02Query = "SELECT id FROM participants WHERE name = '" + participant02 + "'";
-        ResultSet resultPar02 = select(participant02Query);
-        resultPar02.next();
-        int participant02ID = resultPar02.getInt("id");
+        int participant01ID = getParticipantID(participant01);
+        int participant02ID = getParticipantID(participant02);
 
 
         String query = "SELECT COUNT(name) AS count FROM channel WHERE participant_01 = '" + participant01ID + "' AND participant_02 = '" + participant02ID + "'" +
@@ -382,10 +359,7 @@ public enum HSQLDB {
     }
 
     private boolean doesChannelNameExist(String channelName) throws SQLException {
-        String query = "SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'";
-        ResultSet result = select(query);
-        result.next();
-        int count = result.getInt("count");
+        int count = count("SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'");
         if(count > 0){
             return true;
         }
@@ -393,17 +367,10 @@ public enum HSQLDB {
     }
 
     public String getChannelName(String participant1, String participant2) throws SQLException {
-        String query = "SELECT id FROM participants WHERE name = '" + participant1 + "'";
-        ResultSet resultParticipant1 = select(query);
-        resultParticipant1.next();
-        int participant01ID = resultParticipant1.getInt("id");
+        int participant01ID = getParticipantID(participant1);
+        int participant02ID = getParticipantID(participant2);
 
-        query = "SELECT id FROM participants WHERE name = '" + participant2 + "'";
-        ResultSet resultParticipant2 = select(query);
-        resultParticipant2.next();
-        int participant02ID = resultParticipant2.getInt("id");
-
-        query = "SELECT name FROM channel WHERE participant_01 = '" + participant01ID + "' AND participant_02 = '" + participant02ID + "'" +
+        String query = "SELECT name FROM channel WHERE participant_01 = '" + participant01ID + "' AND participant_02 = '" + participant02ID + "'" +
                 " OR participant_01 = '" + participant02ID + "' AND participant_02 = '" + participant01ID + "'";
 
         ResultSet result = select(query);
@@ -413,16 +380,57 @@ public enum HSQLDB {
         return channel;
     }
 
+    public void saveMessage(String participant_from,String participant_to, String plainMessage, String algorithm, String cipher, String keyfile) throws SQLException {
+        int participantFromID = getParticipantID(participant_from);
+        int participantTOID = getParticipantID(participant_to);
+        int algorithmID = getAlgorithmID(algorithm);
+
+        int count = count("SELECT COUNT(id) AS count FROM messages");
+        //update("INSERT INTO messages (id,name,type_id) VALUES ("+ maxCount +",'"+participantName+"',"+typeAsInt+");");
+
+    }
+
+    public void logPostbox(String participantFROM, String participantTO, String message) throws SQLException {
+        int participantFromID = getParticipantID(participantFROM);
+        int count = count("SELECT COUNT(id) AS count FROM postbox_"+participantTO);
+        long unixTime = Instant.now().getEpochSecond();
+        update("INSERT INTO postbox_"+participantTO+"VALUES ("+count+","+participantFromID+",'"+message+"',"+unixTime+");");
+    }
+
+    private int getParticipantID(String participantName) throws SQLException {
+        ResultSet resultParticipant1 = select("SELECT id FROM participants WHERE name = '" + participantName + "'");
+        resultParticipant1.next();
+        return resultParticipant1.getInt("id");
+    }
+
+    private String getParticipantName(int ID) throws SQLException {
+        ResultSet resultSet = select("SELECT name FROM participants WHERE id="+ID);
+        resultSet.next();
+        return resultSet.getString("name");
+    }
+
+    private int getAlgorithmID(String algorithm) throws SQLException {
+        ResultSet resultSet = select("SELECT id FROM algorithm WHERE name= '" + algorithm + "'");
+        resultSet.next();
+        return resultSet.getInt("id");
+    }
+
+    public void initChannelsFromDB(){
+
+    }
+
+    private int count(String query) throws SQLException {
+        ResultSet resultSet = select(query);
+        resultSet.next();
+        return resultSet.getInt("count");
+    }
+
 
     public String dropChannel(String channelName) throws SQLException {
-        String query = "SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'";
-        ResultSet result = select(query);
-        result.next();
-        int count = result.getInt("count");
+        int count = count("SELECT COUNT(name) AS count FROM channel WHERE name = '" + channelName+"'");
 
         if(count!=0){
-            query = "DELETE FROM channel WHERE name = '" + channelName+"'";
-            update(query);
+            update("DELETE FROM channel WHERE name = '" + channelName+"'");
             return "channel ["+channelName+"] deleted";
         }
         else {
