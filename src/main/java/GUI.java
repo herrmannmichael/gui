@@ -195,6 +195,13 @@ public class GUI extends Application {
             return message;
         }
         else if(input.contains("intrude channel")){
+            if(Channel.getChannels().containsKey(parameterList.get(0))){
+
+            }
+            else {
+                return "channel " + parameterList.get(0) + " does not exist";
+            }
+
 
         }
         else if(input.contains("send message")){
@@ -206,9 +213,15 @@ public class GUI extends Application {
 
                 Object algorithm = null;
 
-                switch (parameterList.get(3)) {
-                    case "rsa" -> algorithm = new RSAFactory();
-                    case "shift" -> algorithm = new ShiftFactory();
+                System.out.println(parameterList.get(3));
+
+                if(parameterList.get(3).equals("rsa")){
+                    System.out.println("rsa drin");
+                    algorithm = RSAFactory.build();
+                }
+                else if (parameterList.get(3).equals("shift")){
+                    algorithm = ShiftFactory.build();
+                    System.out.println("shift drin");
                 }
 
                 String encryptedMessage = encrypt(algorithm,tmpParameterList);

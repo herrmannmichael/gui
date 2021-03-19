@@ -6,6 +6,7 @@ import factory.RSAFactory;
 import factory.ShiftFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Channel {
     }
 
     @Subscribe
-    public void receive(MessageReceived messageReceived) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void receive(MessageReceived messageReceived) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
 
         List<String> tmpParameterList = new ArrayList<>();
         tmpParameterList.add(messageReceived.encryptedMessage());
@@ -47,7 +48,7 @@ public class Channel {
         }
 
         String decryptedMessage = GUI.decrypt(algorithm, tmpParameterList);
-        //HSQLDB.instance.logPostbox();
+        HSQLDB.instance.logPostbox(messageReceived.getFromParticipant(), messageReceived.getToParticipant(), decryptedMessage);
 
     }
 
