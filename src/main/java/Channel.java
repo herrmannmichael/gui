@@ -15,11 +15,15 @@ public class Channel {
     private static final HashMap<String, Channel> channels = new HashMap<>();
     private final EventBus eventBus;
     private String name;
+    private List<String> intruderList;
+    private GUI gui;
 
-    public Channel(String name){
+    public Channel(String name, GUI gui){
         this.eventBus = new EventBus();
         this.eventBus.register(this);
         this.name = name;
+        this.intruderList = new ArrayList<>();
+        this.gui = gui;
     }
 
     @Subscribe
@@ -50,6 +54,28 @@ public class Channel {
         String decryptedMessage = GUI.decrypt(algorithm, tmpParameterList);
         HSQLDB.instance.logPostbox(messageReceived.getFromParticipant(), messageReceived.getToParticipant(), decryptedMessage);
 
+        for (String intruder: intruderList){
+            String decryptedMessageByIntruder = "unknown";
+            HSQLDB.instance.logPostbox(messageReceived.getFromParticipant(), intruder, decryptedMessageByIntruder);
+            tmpParameterList.add(messageReceived.encryptedMessage());
+            tmpParameterList.add(messageReceived.getAlgorithm());
+            try{
+                switch (messageReceived.getAlgorithm()){
+                    case "rsa" -> decryptedMessageByIntruder = gui.rsaCrackEncryptedWithin30Seconds(tmpParameterList);
+                    case "shift" -> decryptedMessageByIntruder = gui.crackShift(tmpParameterList);
+                }
+
+                //update postbox
+
+                gui.getOutputArea().setText("intruder ["+ intruder +"] cracked message from participant " +
+                        "["+messageReceived.getFromParticipant()+"] | [" + decryptedMessageByIntruder + "]");
+            }
+            catch (Exception e){
+
+                gui.getOutputArea().setText("intruder [" + intruder + "] | crack message from participant " +
+                        "["+ messageReceived.getFromParticipant() +"] failed");
+            }
+        }
     }
 
     public static HashMap<String, Channel> getChannels() {
@@ -66,5 +92,9 @@ public class Channel {
 
     public static void removeChannel(String name){
         channels.remove(name);
+    }
+
+    public void intrude(String intruderName){
+        this.intruderList.add(intruderName);
     }
 }

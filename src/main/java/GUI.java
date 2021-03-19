@@ -1,4 +1,3 @@
-import com.jcabi.aspects.Timeable;
 import configuration.Configuration;
 import event.MessageReceived;
 import event.MessageSent;
@@ -25,18 +24,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
 
 public class GUI extends Application {
 
+    private TextArea outputArea;
     private final Log log = new Log();
     public void start(Stage primaryStage) throws SQLException {
         primaryStage.setTitle("MSA | Mergentheim/Mosbach Security Agency");
         HSQLDB.instance.setupDatabase();
-        HSQLDB.instance.initChannelsFromDB();
+        HSQLDB.instance.initChannelsFromDB(this);
         System.out.println(HSQLDB.instance.registerParticipant("branch_hkg","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_cpt","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_sfo","normal"));
@@ -59,7 +58,7 @@ public class GUI extends Application {
         TextArea commandLineArea = new TextArea();
         commandLineArea.setWrapText(true);
 
-        TextArea outputArea = new TextArea();
+        outputArea = new TextArea();
         outputArea.setWrapText(true);
         outputArea.setEditable(false);
 
@@ -157,25 +156,18 @@ public class GUI extends Application {
             return cipher;
         }
         else if(input.contains("crack encrypted message")){
-            String ecryptedMessage = "";
+            String encryptedMessage = "";
             if (input.contains("using shift")){
-                Object shiftCracker = ShiftCrackerFactory.build();
-                Method encryptMethod = shiftCracker.getClass().getMethod("decrypt", String.class);
-                ecryptedMessage = (String) encryptMethod.invoke(shiftCracker, parameterList.get(0));
-                return ecryptedMessage;
+                return crackShift(parameterList);
             }
             else if (input.contains("using rsa")){
+                try{
+                    return rsaCrackEncryptedWithin30Seconds(parameterList);
 
-                Callable<String> callableEncryptedMessage = new RsaCrackEncrypted(parameterList);
-                ExecutorService executorService = Executors.newCachedThreadPool();
-                Future<String> callableEncryptedMessageResult = executorService.submit(callableEncryptedMessage);
-                try {
-                    ecryptedMessage = callableEncryptedMessageResult.get(30, TimeUnit.SECONDS);
-                } catch (Exception e){
-                    ecryptedMessage = "cracking encrypted message [" + parameterList.get(0) +"] failed";
                 }
-
-                return ecryptedMessage;
+                catch (Exception e){
+                    return  "cracking encrypted message [" + parameterList.get(0) +"] failed";
+                }
             }
         }
         else if(input.contains("register participant")){
@@ -184,7 +176,7 @@ public class GUI extends Application {
             return message;
         }
         else if(input.contains("create channel")){
-            return HSQLDB.instance.createChannel(parameterList.get(0), parameterList.get(1), parameterList.get(2));
+            return HSQLDB.instance.createChannel(parameterList.get(0), parameterList.get(1), parameterList.get(2), this);
         }
         else if(input.contains("show channel")){
             return HSQLDB.instance.showChannel();
@@ -274,11 +266,27 @@ public class GUI extends Application {
         return (String) encryptMethod.invoke(strategy, parameterList.get(0) ,file);
     }
 
+    public String crackShift(List<String> parameterList) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        String encryptedMessage;
+        Object shiftCracker = ShiftCrackerFactory.build();
+        Method encryptMethod = shiftCracker.getClass().getMethod("decrypt", String.class);
+        encryptedMessage = (String) encryptMethod.invoke(shiftCracker, parameterList.get(0));
+        return encryptedMessage;
+    }
+
     private String rsaCrackEncrypted(List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         File file = new File(Configuration.instance.keyDirectory+parameterList.get(1));
         Object rsaCracker = RSACrackerFactory.build();
         Method encryptMethod = rsaCracker.getClass().getMethod("decrypt", String.class, File.class);
         return (String) encryptMethod.invoke(rsaCracker, parameterList.get(0), file);
+    }
+
+    public String rsaCrackEncryptedWithin30Seconds(List<String> parameterList) throws InterruptedException, ExecutionException, TimeoutException {
+        Callable<String> callableEncryptedMessage = new RsaCrackEncrypted(parameterList);
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        Future<String> callableEncryptedMessageResult = executorService.submit(callableEncryptedMessage);
+
+        return callableEncryptedMessageResult.get(30, TimeUnit.SECONDS);
     }
 
     class RsaCrackEncrypted implements Callable<String>
@@ -293,5 +301,9 @@ public class GUI extends Application {
         @Override public String call() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
             return rsaCrackEncrypted(parameterList);
         }
+    }
+
+    public TextArea getOutputArea() {
+        return outputArea;
     }
 }

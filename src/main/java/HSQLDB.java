@@ -298,7 +298,7 @@ public enum HSQLDB {
         return sqlStringBuilder01.toString();
     }
 
-    public String createChannel(String channelName, String participant01, String participant02) throws SQLException {
+    public String createChannel(String channelName, String participant01, String participant02, GUI gui) throws SQLException {
         if(doesChannelNameExist(channelName)){
             return "channel [" +  channelName + "] already exists";
         }
@@ -334,7 +334,7 @@ public enum HSQLDB {
             String query = "INSERT INTO channel VALUES('" + channelName + "'," + participant01ID + "," + participant02ID + ")";
             update(query);
 
-            Channel.addChannel(channelName, new Channel(channelName));
+            Channel.addChannel(channelName, new Channel(channelName, gui));
 
             return "channel [" + channelName + "] from [" + participant01 + "] to [" + participant02 +"] successfully created";
         }
@@ -415,11 +415,11 @@ public enum HSQLDB {
         return resultSet.getInt("id");
     }
 
-    public void initChannelsFromDB() throws SQLException {
+    public void initChannelsFromDB(GUI gui) throws SQLException {
         ResultSet resultSet = select("SELECT name FROM channel");
         while (resultSet.next()){
             String channelName = resultSet.getString("name");
-            Channel.addChannel(channelName, new Channel(channelName));
+            Channel.addChannel(channelName, new Channel(channelName, gui));
         }
     }
 
