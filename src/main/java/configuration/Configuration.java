@@ -18,9 +18,6 @@ public enum Configuration {
     public String commonPathToJavaArchive = userDirectory + fileSeparator + "components" + fileSeparator;
     public String componentFolderName = "01_component";
 
-    public String inputDataFile = logDirectory + fileSeparator + "input.txt";
-    public String encryptedDataFile = logDirectory + fileSeparator + "encrypted.txt";
-
     public String rsaArchiveName =  "rsa.jar";
     public String pathToRsaJavaArchive = commonPathToJavaArchive + "rsa" + fileSeparator + componentFolderName + fileSeparator + "build" + fileSeparator + "libs" + fileSeparator + rsaArchiveName;
     public String rsaCrackerArchiveName = "rsa_cracker.jar";

@@ -3,22 +3,24 @@ package event;
 public class MessageReceived {
     private String fromParticipant;
     private String toParticipant;
-    private String message;
+    private String encryptedMessage;
     private String algorithm;
+    private String keyfile;
 
-    public MessageReceived(String fromParticipant, String toParticipant, String message, String algorithm){
+    public MessageReceived(String fromParticipant, String toParticipant, String encryptedMessage, String algorithm, String keyfile){
         this.fromParticipant = fromParticipant;
         this.toParticipant = toParticipant;
-        this.message = message;
+        this.encryptedMessage = encryptedMessage;
         this.algorithm = algorithm;
+        this.keyfile = keyfile;
     }
 
     public String toString(){
-        return "Event - MessageReceived - fromParticipant [" + fromParticipant + "], toParticipant [" + toParticipant + "], message [" + message + "]";
+        return "Event - MessageReceived - fromParticipant [" + fromParticipant + "], toParticipant [" + toParticipant + "], encryptedMessage [" + encryptedMessage + "]";
     }
 
-    public String getMessage() {
-        return message;
+    public String encryptedMessage() {
+        return encryptedMessage;
     }
 
     public String getFromParticipant() {
@@ -31,5 +33,9 @@ public class MessageReceived {
 
     public String getAlgorithm() {
         return algorithm;
+    }
+
+    public String getKeyfile() {
+        return keyfile;
     }
 }

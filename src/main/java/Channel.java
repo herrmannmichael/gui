@@ -2,7 +2,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import event.MessageReceived;
 import event.MessageSent;
+import factory.RSAFactory;
+import factory.ShiftFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +23,31 @@ public class Channel {
 
     @Subscribe
     public void receive(MessageSent messageSent){
-
+        //HSQLDB.instance.saveMessage();
     }
 
     @Subscribe
-    public void receive(MessageReceived messageReceived){
+    public void receive(MessageReceived messageReceived) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        List<String> tmpParameterList = new ArrayList<>();
+        tmpParameterList.add(messageReceived.encryptedMessage());
+        tmpParameterList.add(messageReceived.getAlgorithm());
+
+        Object algorithm = null;
+
+        switch (messageReceived.getAlgorithm()) {
+            case "rsa" -> {
+                algorithm = new RSAFactory();
+                tmpParameterList.add(messageReceived.getKeyfile().replace("public", "private"));
+            }
+            case "shift" -> {
+                tmpParameterList.add(messageReceived.getKeyfile());
+                algorithm = new ShiftFactory();
+            }
+        }
+
+        String decryptedMessage = GUI.decrypt(algorithm, tmpParameterList);
+        //HSQLDB.instance.logPostbox();
 
     }
 

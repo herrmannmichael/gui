@@ -1,5 +1,7 @@
 import com.jcabi.aspects.Timeable;
 import configuration.Configuration;
+import event.MessageReceived;
+import event.MessageSent;
 import factory.RSACrackerFactory;
 import factory.RSAFactory;
 import factory.ShiftCrackerFactory;
@@ -200,7 +202,24 @@ public class GUI extends Application {
                 tmpParameterList.add(parameterList.get(0));
                 tmpParameterList.add(parameterList.get(3));
                 tmpParameterList.add(parameterList.get(4));
-                encrypt(parameterList.get(3),tmpParameterList);
+
+                Object algorithm = null;
+
+                switch (parameterList.get(3)) {
+                    case "rsa" -> algorithm = new RSAFactory();
+                    case "shift" -> algorithm = new ShiftFactory();
+                }
+
+                String encryptedMessage = encrypt(algorithm,tmpParameterList);
+                String channelName = HSQLDB.instance.getChannelName(parameterList.get(1),parameterList.get(2));
+                Channel channel = Channel.getChannels().get(channelName);
+                MessageSent messageSent = new MessageSent(parameterList.get(1), parameterList.get(2), parameterList.get(0), encryptedMessage, parameterList.get(3), parameterList.get(4));
+                channel.receive(messageSent);
+
+                MessageReceived messageReceived = new MessageReceived(messageSent.getFromParticipant(), messageSent.getToParticipant(), messageSent.getEncryptedMessage(), messageSent.getAlgorithm(), messageSent.getKeyfile());
+                channel.receive(messageReceived);
+
+                return parameterList.get(2) + " received new message";
             }
             else {
                 return "no valid channel from ["+parameterList.get(1)+"] to ["+parameterList.get(2)+"]";
@@ -227,14 +246,14 @@ public class GUI extends Application {
         return new ArrayList<>();
     }
 
-    private String encrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static String encrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         File file = new File(Configuration.instance.keyDirectory+parameterList.get(2));
         System.out.println(file.getAbsolutePath());
         Method encryptMethod = strategy.getClass().getMethod("encrypt", String.class, File.class);
         return (String) encryptMethod.invoke(strategy, parameterList.get(0) ,file);
     }
 
-    private String decrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static String decrypt(Object strategy, List<String> parameterList) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         File file = new File(Configuration.instance.keyDirectory+parameterList.get(2));
         System.out.println(file.getAbsolutePath());
         Method encryptMethod = strategy.getClass().getMethod("decrypt", String.class, File.class);

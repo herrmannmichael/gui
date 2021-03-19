@@ -423,6 +423,9 @@ public enum HSQLDB {
         if(count!=0){
             query = "DELETE FROM channel WHERE name = '" + channelName+"'";
             update(query);
+
+            Channel.removeChannel(channelName);
+
             return "channel ["+channelName+"] deleted";
         }
         else {
