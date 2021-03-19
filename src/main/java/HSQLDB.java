@@ -384,10 +384,10 @@ public enum HSQLDB {
         int participantFromID = getParticipantID(participant_from);
         int participantTOID = getParticipantID(participant_to);
         int algorithmID = getAlgorithmID(algorithm);
+        long unixTime = Instant.now().getEpochSecond();
 
-        int count = count("SELECT COUNT(id) AS count FROM messages");
-        //update("INSERT INTO messages (id,name,type_id) VALUES ("+ maxCount +",'"+participantName+"',"+typeAsInt+");");
-
+        int count = count("SELECT COUNT(id) AS count FROM messages") + 1;
+        update("INSERT INTO messages VALUES ("+count+","+participantFromID+","+participantTOID+",'"+plainMessage+"',"+algorithmID+",'"+cipher+"','"+keyfile+"',"+unixTime+");");
     }
 
     public void logPostbox(String participantFROM, String participantTO, String message) throws SQLException {
