@@ -1,12 +1,12 @@
 package event;
 
-public class MessageSent {
+public class MessageReceived {
     private String fromParticipant;
     private String toParticipant;
     private String message;
     private String algorithm;
 
-    public MessageSent(String fromParticipant, String toParticipant, String message, String algorithm){
+    public MessageReceived(String fromParticipant, String toParticipant, String message, String algorithm){
         this.fromParticipant = fromParticipant;
         this.toParticipant = toParticipant;
         this.message = message;
@@ -14,7 +14,7 @@ public class MessageSent {
     }
 
     public String toString(){
-        return "Event - MessageSent - fromParticipant [" + fromParticipant + "], toParticipant [" + toParticipant + "], message [" + message + "]";
+        return "Event - MessageReceived - fromParticipant [" + fromParticipant + "], toParticipant [" + toParticipant + "], message [" + message + "]";
     }
 
     public String getMessage() {
