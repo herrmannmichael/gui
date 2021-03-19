@@ -65,7 +65,7 @@ public class Channel {
                     case "shift" -> decryptedMessageByIntruder = gui.crackShift(tmpParameterList);
                 }
 
-                //update postbox
+                HSQLDB.instance.updateIntruderPostbox(decryptedMessageByIntruder);
 
                 gui.getOutputArea().setText("intruder ["+ intruder +"] cracked message from participant " +
                         "["+messageReceived.getFromParticipant()+"] | [" + decryptedMessageByIntruder + "]");
