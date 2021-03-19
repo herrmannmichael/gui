@@ -38,12 +38,12 @@ public class Channel {
 
         switch (messageReceived.getAlgorithm()) {
             case "rsa" -> {
-                algorithm = new RSAFactory();
+                algorithm = RSAFactory.build();
                 tmpParameterList.add(messageReceived.getKeyfile().replace("public", "private"));
             }
             case "shift" -> {
                 tmpParameterList.add(messageReceived.getKeyfile());
-                algorithm = new ShiftFactory();
+                algorithm = ShiftFactory.build();
             }
         }
 

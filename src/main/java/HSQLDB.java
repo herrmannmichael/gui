@@ -392,9 +392,9 @@ public enum HSQLDB {
 
     public void logPostbox(String participantFROM, String participantTO, String message) throws SQLException {
         int participantFromID = getParticipantID(participantFROM);
-        int count = count("SELECT COUNT(id) AS count FROM postbox_"+participantTO);
+        int count = count("SELECT COUNT(id) AS count FROM postbox_"+participantTO) + 1;
         long unixTime = Instant.now().getEpochSecond();
-        update("INSERT INTO postbox_"+participantTO+"VALUES ("+count+","+participantFromID+",'"+message+"',"+unixTime+");");
+        update("INSERT INTO postbox_"+participantTO+" VALUES ("+count+","+participantFromID+",'"+message+"',"+unixTime+");");
     }
 
     private int getParticipantID(String participantName) throws SQLException {
