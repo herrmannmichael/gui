@@ -384,10 +384,10 @@ public enum HSQLDB {
         int participantFromID = getParticipantID(participant_from);
         int participantTOID = getParticipantID(participant_to);
         int algorithmID = getAlgorithmID(algorithm);
+        long unixTime = Instant.now().getEpochSecond();
 
-        int count = count("SELECT COUNT(id) AS count FROM messages");
-        //update("INSERT INTO messages (id,name,type_id) VALUES ("+ maxCount +",'"+participantName+"',"+typeAsInt+");");
-
+        int count = count("SELECT COUNT(id) AS count FROM messages") + 1;
+        update("INSERT INTO messages VALUES ("+count+","+participantFromID+","+participantTOID+",'"+plainMessage+"',"+algorithmID+",'"+cipher+"','"+keyfile+"',"+unixTime+");");
     }
 
     public void logPostbox(String participantFROM, String participantTO, String message) throws SQLException {
@@ -395,6 +395,12 @@ public enum HSQLDB {
         int count = count("SELECT COUNT(id) AS count FROM postbox_"+participantTO) + 1;
         long unixTime = Instant.now().getEpochSecond();
         update("INSERT INTO postbox_"+participantTO+" VALUES ("+count+","+participantFromID+",'"+message+"',"+unixTime+");");
+    }
+
+    public void updateIntruderPostbox(String message) throws SQLException {
+        int count = count("SELECT COUNT(id) AS count FROM postbox_msa");
+
+        update("UPDATE postbox_msa SET message = '"+message+"' WHERE id = "+count+";");
     }
 
     private int getParticipantID(String participantName) throws SQLException {
@@ -437,7 +443,6 @@ public enum HSQLDB {
             update("DELETE FROM channel WHERE name = '" + channelName+"'");
             Channel.removeChannel(channelName);
             return "channel ["+channelName+"] deleted";
-
         }
         else {
             return "unknown channel ["+channelName+"]";
