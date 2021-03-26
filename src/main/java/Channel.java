@@ -27,8 +27,8 @@ public class Channel {
     }
 
     @Subscribe
-    public void receive(MessageSent messageSent){
-        //HSQLDB.instance.saveMessage();
+    public void receive(MessageSent messageSent) throws SQLException {
+        HSQLDB.instance.saveMessage(messageSent.getFromParticipant(), messageSent.getToParticipant(), messageSent.getMessage(), messageSent.getAlgorithm(), messageSent.getEncryptedMessage(), messageSent.getKeyfile());
     }
 
     @Subscribe
@@ -68,7 +68,7 @@ public class Channel {
                     case "shift" -> decryptedMessageByIntruder = gui.crackShift(tmpParameterList);
                 }
 
-                HSQLDB.instance.updateIntruderPostbox(decryptedMessageByIntruder);
+                HSQLDB.instance.updateIntruderPostbox(decryptedMessageByIntruder, intruder);
 
                 gui.getOutputArea().setText("intruder ["+ intruder +"] cracked message from participant " +
                         "["+messageReceived.getFromParticipant()+"] | [" + decryptedMessageByIntruder + "]\n" + gui.getOutputArea().getText());

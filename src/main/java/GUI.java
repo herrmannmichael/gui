@@ -43,6 +43,10 @@ public class GUI extends Application {
         System.out.println(HSQLDB.instance.registerParticipant("branch_syd","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("branch_wuh","normal"));
         System.out.println(HSQLDB.instance.registerParticipant("msa","intruder"));
+        HSQLDB.instance.createChannel("hkg_wuh", "branch_hkg", "branch_wuh", this);
+        HSQLDB.instance.createChannel("hkg_cpt", "branch_hkg", "branch_cpt", this);
+        HSQLDB.instance.createChannel("cpt_syd", "branch_cpt", "branch_syd", this);
+        HSQLDB.instance.createChannel("syd_sfo", "branch_syd", "branch_sfo", this);
 
         HBox hBox = new HBox();
         hBox.setPadding(new Insets(15, 12, 15, 12));
@@ -231,6 +235,7 @@ public class GUI extends Application {
 
                 MessageReceived messageReceived = new MessageReceived(messageSent.getFromParticipant(), messageSent.getToParticipant(), messageSent.getEncryptedMessage(), messageSent.getAlgorithm(), messageSent.getKeyfile());
                 channel.receive(messageReceived);
+
 
                 return parameterList.get(2) + " received new message";
             }

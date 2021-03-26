@@ -51,6 +51,11 @@ public enum HSQLDB {
         sqlStringBuilder02.append("CREATE UNIQUE INDEX IF NOT EXISTS idx_algorithms ON algorithms (name)");
         System.out.println("sqlStringBuilder : " + sqlStringBuilder02.toString());
         update(sqlStringBuilder02.toString());
+
+        String query = "INSERT INTO algorithms (id,name) VALUES (1,'rsa');";
+        update(query);
+        query = "INSERT INTO algorithms (id,name) VALUES (2,'shift');";
+        update(query);
     }
 
     /*
@@ -397,10 +402,10 @@ public enum HSQLDB {
         update("INSERT INTO postbox_"+participantTO+" VALUES ("+count+","+participantFromID+",'"+message+"',"+unixTime+");");
     }
 
-    public void updateIntruderPostbox(String message) throws SQLException {
-        int count = count("SELECT COUNT(id) AS count FROM postbox_msa");
+    public void updateIntruderPostbox(String message, String intruder) throws SQLException {
+        int count = count("SELECT COUNT(id) AS count FROM postbox_" + intruder);
 
-        update("UPDATE postbox_msa SET message = '"+message+"' WHERE id = "+count+";");
+        update("UPDATE postbox_" + intruder + " SET message = '"+message+"' WHERE id = "+count+";");
     }
 
     private int getParticipantID(String participantName) throws SQLException {
@@ -416,7 +421,7 @@ public enum HSQLDB {
     }
 
     private int getAlgorithmID(String algorithm) throws SQLException {
-        ResultSet resultSet = select("SELECT id FROM algorithm WHERE name= '" + algorithm + "'");
+        ResultSet resultSet = select("SELECT id FROM algorithms WHERE name= '" + algorithm + "'");
         resultSet.next();
         return resultSet.getInt("id");
     }
